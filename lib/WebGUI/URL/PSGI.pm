@@ -21,6 +21,8 @@ use Plack::App::URLMap;
 use Plack::Server::Apache2;
 use Apache2::Const qw(DECLINED OK);
 
+use namespace::clean;
+
 =head1 NAME
 
 WebGUI::URL::PSGI
@@ -90,5 +92,15 @@ sub handler {
 
     return DECLINED;
 }
+
+no namespace::clean;
+
+=begin Pod::Coverage
+
+handler
+
+=end Pod::Coverage
+
+=cut
 
 1;
