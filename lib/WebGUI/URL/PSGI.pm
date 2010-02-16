@@ -19,7 +19,7 @@ use warnings;
 
 use Plack::App::URLMap;
 use Plack::Server::Apache2;
-use Apache2::Const qw(DECLINED OK);
+use Apache2::Const -compile => qw(DECLINED OK);
 
 use namespace::clean;
 
@@ -63,7 +63,7 @@ sub handler {
     my ($request, $server, $config) = @_;
 
     my $apps = $config->get('psgi');
-    return DECLINED unless ($apps && keys %$apps > 0);
+    return Apache2::Const::DECLINED unless ($apps && keys %$apps > 0);
 
     my $path = $request->uri;
 
@@ -87,10 +87,10 @@ sub handler {
             };
             return Plack::Server::Apache2::handler($request);
         });
-        return OK;
+        return Apache2::Const::OK;
     }
 
-    return DECLINED;
+    return Apache2::Const::DECLINED;
 }
 
 no namespace::clean;

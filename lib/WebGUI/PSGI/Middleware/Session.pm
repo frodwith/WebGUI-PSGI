@@ -2,8 +2,10 @@ package WebGUI::PSGI::Middleware::Session;
 use base qw(Plack::Middleware);
 
 use WebGUI::Session;
+use WebGUI::Session::Url;
 use WebGUI::Config;
 use Plack::Response;
+use Plack::Request;
 
 use warnings;
 use strict;
@@ -69,7 +71,7 @@ sub call {
         );
     }
 
-    my $response = Plack::Response->new(@{$self->app->($env)});
+    my $response = Plack::Response->new(@{ $self->app->($env) });
     $response->cookies->{$session->config->getCookieName} = {
         value => $session->getId
     };
