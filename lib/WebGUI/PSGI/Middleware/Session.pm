@@ -71,6 +71,7 @@ sub call {
         );
     }
 
+    local $env->{'psgi.url_scheme'} = 'https' if ($env->{HTTP_SSLPROXY});
     my $response = Plack::Response->new(@{ $self->app->($env) });
     $response->cookies->{$session->config->getCookieName} = {
         value => $session->getId
