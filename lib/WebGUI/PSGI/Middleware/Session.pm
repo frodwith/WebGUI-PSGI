@@ -1,11 +1,7 @@
 package WebGUI::PSGI::Middleware::Session;
 use base qw(Plack::Middleware);
 
-use WebGUI::Session;
-use WebGUI::Session::Url;
-use WebGUI::Config;
 use Plack::Response;
-use Plack::Request;
 
 use warnings;
 use strict;
@@ -61,7 +57,12 @@ sub call {
             || $ENV{WEBGUI_CONFIG}
             || die q(Couldn't find a WebGUI config);
 
+        require WebGUI::Config;
+        require WebGUI::Session;
+
         my $config = WebGUI::Config->new($root, $configFile);
+
+        require Plack::Request;
         my $request = Plack::Request->new($env);
 
         my $cookie = $request->cookie($config->getCookieName);
@@ -71,6 +72,7 @@ sub call {
         );
     }
 
+    local $env->{'psgi.url_scheme'} = 'https' if ($env->{HTTP_SSLPROXY});
     my $response = Plack::Response->new(@{ $self->app->($env) });
     $response->cookies->{$session->config->getCookieName} = {
         value => $session->getId
