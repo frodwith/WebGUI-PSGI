@@ -65,17 +65,19 @@ sub call {
         require Plack::Request;
         my $request = Plack::Request->new($env);
 
-        my $cookie = $request->cookie($config->getCookieName);
+        my $cookie = $request->cookies->{$config->getCookieName};
 
         $session = $env->{wgSession} = WebGUI::Session->open(
-            $root, $configFile, undef, undef, $cookie && $cookie->value
+            $root, $configFile, undef, undef, $cookie
         );
     }
 
+    my $path = $env->{SCRIPT_NAME} || '/';
     local $env->{'psgi.url_scheme'} = 'https' if ($env->{HTTP_SSLPROXY});
     my $response = Plack::Response->new(@{ $self->app->($env) });
     $response->cookies->{$session->config->getCookieName} = {
-        value => $session->getId
+        value => $session->getId,
+        path  => $path,
     };
 
     return $response->finalize;
